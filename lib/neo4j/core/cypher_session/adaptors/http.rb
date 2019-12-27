@@ -53,9 +53,13 @@ module Neo4j
             list = response.body || []
 
             list.map do |item|
-              {label: item[:label].to_sym,
-               properties: item[:property_keys].map(&:to_sym)}
-            end
+              if item[:label]
+                {label: item[:label].to_sym,
+                 properties: item[:property_keys].map(&:to_sym)}
+              else
+                nil
+              end
+            end.compact
           end
 
           CONSTRAINT_TYPES = {
