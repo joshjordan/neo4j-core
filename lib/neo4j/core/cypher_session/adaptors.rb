@@ -213,7 +213,9 @@ ERROR
           end
 
           def validate_connection!(transaction)
-            fail 'Query attempted without a connection' if !connected?
+            if !connected?
+              self.respond_to?(:refresh!) ? self.refresh! : fail('Query attempted without a connection')
+            end
             fail "Invalid transaction object: #{transaction}" if !transaction.is_a?(self.class.transaction_class)
           end
 

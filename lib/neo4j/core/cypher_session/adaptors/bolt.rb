@@ -55,6 +55,12 @@ module Neo4j
             end
           end
 
+          def refresh!
+            !@tcp_client.close if @tcp_client && !@tcp_client.closed?
+            open_socket
+            connect
+          end
+
           def connected?
             !!@tcp_client && !@tcp_client.closed?
           end
