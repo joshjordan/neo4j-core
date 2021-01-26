@@ -14,8 +14,11 @@ module Neo4j
             result = query(session, 'CALL db.indexes()', {}, skip_instrumentation: true)
 
             result.map do |row|
-              label, property = row.description.match(/INDEX ON :([^\(]+)\(([^\)]+)\)/)[1, 2]
-              {type: row.type.to_sym, label: label.to_sym, properties: [property.to_sym], state: row.state.to_sym}
+              labels, property = row.description.match(/INDEX ON (?:NODE)?:([^\(]+)\(([^\)]+)\)/)[1, 2]
+              labels = labels.split(/,\s*/)
+              result = {type: row.type.to_sym, properties: [property.to_sym], state: row.state.to_sym, labels: labels}
+              result[:label] = labels.first.to_sym unless labels.count != 1
+              result
             end
           end
 
